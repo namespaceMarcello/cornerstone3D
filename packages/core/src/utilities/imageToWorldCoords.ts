@@ -36,21 +36,24 @@ export default function imageToWorldCoords(
   const imageCoordsInWorld = vec3.create();
 
   // move from origin in the direction of the row cosines with the amount of
-  // row pixel spacing times the first element of the image coordinates vector
+  // column pixel spacing (the distance between columns, DICOM PixelSpacing[1])
+  // times the first element of the image coordinates vector
   vec3.scaleAndAdd(
     imageCoordsInWorld,
     origin,
     rowCosines,
     // to accommodate the [0,0] being on the top left corner of the top left pixel
     // but the origin is at the center of the top left pixel
-    rowPixelSpacing * (imageCoords[0] - 0.5)
+    columnPixelSpacing * (imageCoords[0] - 0.5)
   );
 
+  // then in the direction of the column cosines with the amount of row pixel
+  // spacing (the distance between rows, DICOM PixelSpacing[0])
   vec3.scaleAndAdd(
     imageCoordsInWorld,
     imageCoordsInWorld,
     columnCosines,
-    columnPixelSpacing * (imageCoords[1] - 0.5)
+    rowPixelSpacing * (imageCoords[1] - 0.5)
   );
 
   return Array.from(imageCoordsInWorld) as Point3;
